@@ -1,5 +1,5 @@
 name: test_packages_ci_cd_20022026
-description: "A new Flutter package project."
+description: "A Flutter package project to test CI/CD pipelines with pubdev"
 version: 0.0.1
 homepage: "https://github.com/dCastillo727/test_packages_ci_cd_20022026"
 
