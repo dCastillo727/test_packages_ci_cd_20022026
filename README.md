@@ -1,39 +1,38 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# test_packages_ci_cd_20022026
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+A Flutter package used to test CI/CD pipelines with pub.dev before applying the same setup to production libraries.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- `CustomLoader` widget with a psychedelic, deformable shape painter.
+- `PsychedelicPainter` — a `CustomPainter` that renders an organic, irregularly deformed blob that grows and shifts color based on a `deformation` factor.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+```dart
+import 'package:test_packages_ci_cd_20022026/test_packages_ci_cd_20022026.dart';
+
+// Minimal usage with defaults
+const CustomLoader();
+
+// Custom colors and size
+CustomLoader(
+  colorVariations: [Colors.cyan, Colors.deepPurple, Colors.amber],
+);
+```
+
+Use `PsychedelicPainter` directly if you need more control:
 
 ```dart
-const like = 'sample';
+CustomPaint(
+  painter: PsychedelicPainter(
+    deformation: 0.6,              // 0 = small plain circle, 1 = fully deformed
+    colors: [Colors.red, Colors.blue, Colors.green],
+  ),
+  child: const SizedBox.square(dimension: 200),
+);
 ```
 
 ## Additional information
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+This package is a CI/CD test bed. It is not intended for production use.
