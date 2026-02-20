@@ -1,7 +1,7 @@
 name: test_packages_ci_cd_20022026
 description: "A new Flutter package project."
 version: 0.0.1
-homepage: "https://github.com/dCastillo727"
+homepage: "https://github.com/dCastillo727/test_packages_ci_cd_20022026"
 
 environment:
   sdk: ^3.10.3
