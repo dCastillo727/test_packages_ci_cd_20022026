@@ -3,10 +3,12 @@ import 'package:test_packages_ci_cd_20022026/src/painter/psychedelic_painter.dar
 
 class CustomLoader extends StatelessWidget {
   final List<Color> colorVariations;
+  final Duration animationDuration;
 
   const CustomLoader({
     super.key,
     this.colorVariations = const [Colors.red, Colors.green, Colors.blue, Colors.orange, Colors.purple],
+    this.animationDuration = const Duration(seconds: 1),
   });
 
   @override
@@ -21,7 +23,7 @@ class CustomLoader extends StatelessWidget {
         begin: 0,
         end: 1,
       ),
-      duration: const Duration(seconds: 1),
+      duration: animationDuration,
       repeatMode: RepeatMode.reverse,
       builder: (context, factor, child) {
         return CustomPaint(
