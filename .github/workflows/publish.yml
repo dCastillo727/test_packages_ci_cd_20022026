@@ -11,9 +11,17 @@ jobs:
             id-token: write
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-            - uses: dart-lang/setup-dart@v1
+            - name: Set up Flutter
+              uses: flutter-actions/setup-flutter@v4
+              with:
+                  channel: stable
+                  version: 3.41.2
+
+            - name: Set up Dart OIDC
+              uses: dart-lang/setup-dart@v1
 
             - name: Install dependencies
               run: flutter pub get
