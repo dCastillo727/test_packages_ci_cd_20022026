@@ -16,10 +16,10 @@ jobs:
             - uses: flutter-actions/setup-flutter@v4
               with:
                   channel: stable
-                  version: 3.10.4
+                  version: 3.41.2
 
             - name: Install dependencies
-              run: fvm flutter pub get
+              run: flutter pub get
 
             - name: Publish
-              run: fvm flutter pub publish --force
+              run: flutter pub publish --force
