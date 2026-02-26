@@ -4,7 +4,7 @@ on:
     pull_request:
         branches:
             - main
-        types: [opened, closed]
+        types: [opened, synchronize, closed]
 
 permissions:
     contents: write
@@ -19,17 +19,37 @@ jobs:
                   fetch-depth: 0
 
             - name: Validate source branch
-              if: github.event.action == 'opened'
+              if: github.event.action != 'closed'
               run: |
                   if [[ "${{ github.head_ref }}" != "develop" ]]; then
                     echo "Error: Pull request source branch must be 'develop'."
                     exit 1
                   fi
 
+            - name: Check if PR version already exists
+              if: github.event.action != 'closed'
+              run: |
+                  VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
+                  echo "Checking pubspec version availability: $VERSION"
+
+                  if git rev-parse --verify "$VERSION" >/dev/null 2>&1; then
+                    echo "Error: Version $VERSION already exists as a tag."
+                    echo "Please update the version in pubspec.yaml before merging."
+                    exit 1
+                  else
+                    echo "Version $VERSION is available."
+                  fi
+
             - name: Bump version and push tag
               if: github.event.pull_request.merged == true && github.head_ref == 'develop'
-              uses: anothrNick/github-tag-action@1.64.0
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  WITH_V: false
-                  DEFAULT_BUMP: none
+              run: |
+                  VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
+
+                  echo "Detected pubspec version: $VERSION"
+
+                  git config user.name "github-actions"
+                  git config user.email "github-actions@github.com"
+
+                  git tag $VERSION
+                  git push origin $VERSION
+                  echo "Version $VERSION tagged and pushed to origin."
