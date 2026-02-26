@@ -12,6 +12,8 @@ permissions:
 jobs:
   validate-and-tag:
     runs-on: ubuntu-latest
+    outputs:
+      tag_created: ${{ steps.set_output.outputs.tag_created }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,13 +59,13 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Set output for next job
-        id: set-output
+        id: set_output
         run: echo "tag_created=${{ steps.tag_step.outputs.VERSION }}" >> $GITHUB_OUTPUT
 
   call-publish-workflow:
     permissions:
       id-token: write
     needs: validate-and-tag
-    if: needs.validate-and-tag.outputs.tag_created != ''
+    if: github.event.pull_request.merged == true && needs.validate-and-tag.outputs.tag_created != ''
     uses: ./.github/workflows/publish.yml
     secrets: inherit
