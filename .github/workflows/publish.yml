@@ -13,10 +13,13 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
-            - uses: dart-lang/setup-dart@v1
+            - uses: flutter-actions/setup-flutter@v4
+              with:
+                  channel: stable
+                  version: 3.10.4
 
             - name: Install dependencies
-              run: dart pub get
+              run: fvm flutter pub get
 
             - name: Publish
-              run: dart pub publish --force
+              run: fvm flutter pub publish --force
