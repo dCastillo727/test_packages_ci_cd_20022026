@@ -1,0 +1,31 @@
+name: Check Merge Source Branch
+
+on:
+    pull_request:
+        branches:
+            - main
+        types: [opened, synchronize, reopened, closed]
+
+jobs:
+    check-branch:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Validate source branch
+              run: |
+                  if [[ "${{ github.head_ref }}" != "develop" ]]; then
+                    echo "Error: Pull request source branch must be 'develop'."
+                    exit 1
+                  fi
+
+            - name: Bump version and push tag
+              if: github.event.pull_request.merged == true
+              uses: anothrNick/github-tag-action@1.64.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  WITH_V: true
+                  DEFAULT_BUMP: none
