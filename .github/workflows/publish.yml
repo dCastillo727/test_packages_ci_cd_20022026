@@ -1,30 +1,31 @@
 name: Publish to pub.dev
 
 on:
-    push:
-        tags:
-            - "[0-9]+.[0-9]+.[0-9]+"
+  workflow_call:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
-    publish:
-        permissions:
-            id-token: write
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+  publish:
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Set up Flutter
-              uses: flutter-actions/setup-flutter@v4
-              with:
-                  channel: stable
-                  version: 3.41.2
+      - name: Set up Flutter
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          version: 3.41.2
 
-            - name: Set up Dart OIDC
-              uses: dart-lang/setup-dart@v1
+      - name: Set up Dart OIDC
+        uses: dart-lang/setup-dart@v1
 
-            - name: Install dependencies
-              run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-            - name: Publish
-              run: flutter pub publish --force
+      - name: Publish
+        run: flutter pub publish --force

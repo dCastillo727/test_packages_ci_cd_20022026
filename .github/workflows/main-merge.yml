@@ -1,55 +1,67 @@
 name: Check Merge Source Branch
 
 on:
-    pull_request:
-        branches:
-            - main
-        types: [opened, synchronize, closed]
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, closed]
 
 permissions:
-    contents: write
+  contents: write
 
 jobs:
-    check-branch:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+  validate-and-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Validate source branch
-              if: github.event.action != 'closed'
-              run: |
-                  if [[ "${{ github.head_ref }}" != "develop" ]]; then
-                    echo "Error: Pull request source branch must be 'develop'."
-                    exit 1
-                  fi
+      - name: Validate source branch
+        if: github.event.action != 'closed'
+        run: |
+          if [[ "${{ github.head_ref }}" != "develop" ]]; then
+            echo "Error: Pull request source branch must be 'develop'."
+            exit 1
+          fi
 
-            - name: Check if PR version already exists
-              if: github.event.action != 'closed'
-              run: |
-                  VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
-                  echo "Checking pubspec version availability: $VERSION"
+      - name: Check if PR version already exists
+        if: github.event.action != 'closed'
+        run: |
+          VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
+          echo "Checking pubspec version availability: $VERSION"
 
-                  if git rev-parse --verify "$VERSION" >/dev/null 2>&1; then
-                    echo "Error: Version $VERSION already exists as a tag."
-                    echo "Please update the version in pubspec.yaml before merging."
-                    exit 1
-                  else
-                    echo "Version $VERSION is available."
-                  fi
+          if git rev-parse --verify "$VERSION" >/dev/null 2>&1; then
+            echo "Error: Version $VERSION already exists as a tag."
+            echo "Please update the version in pubspec.yaml before merging."
+            exit 1
+          else
+            echo "Version $VERSION is available."
+          fi
 
-            - name: Bump version and push tag
-              if: github.event.pull_request.merged == true && github.head_ref == 'develop'
-              run: |
-                  VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
+      - name: Bump version and push tag
+        id: tag_step
+        if: github.event.pull_request.merged == true && github.head_ref == 'develop'
+        run: |
+          VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
 
-                  echo "Detected pubspec version: $VERSION"
+          echo "Detected pubspec version: $VERSION"
 
-                  git config user.name "github-actions"
-                  git config user.email "github-actions@github.com"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
 
-                  git tag $VERSION
-                  git push origin $VERSION
-                  echo "Version $VERSION tagged and pushed to origin."
+          git tag $VERSION
+          git push origin $VERSION
+          echo "Version $VERSION tagged and pushed to origin."
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set output for next job
+        id: set-output
+        run: echo "tag_created=${{ steps.tag_step.outputs.VERSION }}" >> $GITHUB_OUTPUT
+
+  call-publish-workflow:
+    needs: validate-and-tag
+    if: needs.validate-and-tag.outputs.tag_created != ''
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
