@@ -1,6 +1,6 @@
 name: test_packages_ci_cd_20022026
 description: "A Flutter package project to test CI/CD pipelines with pubdev"
-version: 0.1.0
+version: 0.2.0
 homepage: "https://github.com/dCastillo727/test_packages_ci_cd_20022026"
 
 environment:
