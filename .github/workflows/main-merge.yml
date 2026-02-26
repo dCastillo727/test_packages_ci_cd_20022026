@@ -61,6 +61,8 @@ jobs:
         run: echo "tag_created=${{ steps.tag_step.outputs.VERSION }}" >> $GITHUB_OUTPUT
 
   call-publish-workflow:
+    permissions:
+      id-token: write
     needs: validate-and-tag
     if: needs.validate-and-tag.outputs.tag_created != ''
     uses: ./.github/workflows/publish.yml
