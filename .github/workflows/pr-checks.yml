@@ -19,6 +19,8 @@ jobs:
           channel: stable
           version: latest
           cache: true
+          cache-sdk: true
+          cache-key: "flutter-${{ runner.os }}-stable-${{ hashFiles('**/pubspec.yaml') }}"
 
       - name: Cache pub dependencies
         uses: actions/cache@v4
