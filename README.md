@@ -36,4 +36,4 @@ CustomPaint(
 ## Additional information
 
 This package is a CI/CD test bed. It is not intended for production use.
-This test is being performed
+This test is being performed over this project
