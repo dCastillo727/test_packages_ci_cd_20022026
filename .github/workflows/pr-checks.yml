@@ -1,38 +1,38 @@
 name: Flutter & Dart PR Checks
 
 on:
-    pull_request:
-        branches:
-            - main
-        types: [opened, synchronize, reopened]
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
-    analyze-and-test:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-            - name: Set up Flutter
-              uses: flutter-actions/setup-flutter@v4
-              with:
-                  channel: stable
-                  version: latest
-                  cache: true
+      - name: Set up Flutter
+        uses: flutter-actions/setup-flutter@v4
+        with:
+          channel: stable
+          version: latest
+          cache: true
 
-            - name: Cache pub dependencies
-              uses: actions/cache@v4
-              with:
-                  path: ~/.pub-cache
-                  key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pub-
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
 
-            - name: Install dependencies
-              run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-            - name: Code analyzer check
-              run: flutter analyze
+      - name: Code analyzer check
+        run: flutter analyze
 
-            - name: Code formatting check
-              run: flutter format --set-exit-if-changed .
+      - name: Code formatting check
+        run: dart format --set-exit-if-changed .
