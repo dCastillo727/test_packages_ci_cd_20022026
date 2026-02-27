@@ -100,7 +100,9 @@ class PsychedelicPainter extends CustomPainter {
     } else {
       // Interpolar cada color desde el primero hacia su valor real
       // según el factor de deformación. Así la transición es progresiva.
-      final gradientColors = colors.map((c) => Color.lerp(colors.first, c, colorBlend)!).toList();
+      final gradientColors = colors
+          .map((c) => Color.lerp(colors.first, c, colorBlend)!)
+          .toList();
 
       paint.shader =
           SweepGradient(
@@ -116,6 +118,7 @@ class PsychedelicPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant PsychedelicPainter oldDelegate) {
-    return oldDelegate.deformation != deformation || oldDelegate.colors != colors;
+    return oldDelegate.deformation != deformation ||
+        oldDelegate.colors != colors;
   }
 }

@@ -8,7 +8,13 @@ class CustomLoader extends StatelessWidget {
 
   const CustomLoader({
     super.key,
-    this.colorVariations = const [Colors.red, Colors.green, Colors.blue, Colors.orange, Colors.purple],
+    this.colorVariations = const [
+      Colors.red,
+      Colors.green,
+      Colors.blue,
+      Colors.orange,
+      Colors.purple,
+    ],
     this.animationDuration = const Duration(seconds: 1),
     this.deformationTween,
   });
