@@ -12,13 +12,12 @@ permissions:
 jobs:
   validate-and-tag:
     runs-on: ubuntu-latest
-    outputs:
-      tag_created: ${{ steps.set_output.outputs.tag_created }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          tokens: ${{ secrets.TAGS_PAT }}
 
       - name: Validate source branch
         if: github.event.action != 'closed'
@@ -43,7 +42,6 @@ jobs:
           fi
 
       - name: Bump version and push tag
-        id: tag_step
         if: github.event.pull_request.merged == true && github.head_ref == 'develop'
         run: |
           VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
@@ -56,16 +54,3 @@ jobs:
           git tag $VERSION
           git push origin $VERSION
           echo "Version $VERSION tagged and pushed to origin."
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Set output for next job
-        id: set_output
-        run: echo "tag_created=${{ steps.tag_step.outputs.VERSION }}" >> $GITHUB_OUTPUT
-
-  call-publish-workflow:
-    permissions:
-      id-token: write
-    needs: validate-and-tag
-    if: github.event.pull_request.merged == true && needs.validate-and-tag.outputs.tag_created != ''
-    uses: ./.github/workflows/publish.yml
-    secrets: inherit
