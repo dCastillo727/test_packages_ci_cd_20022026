@@ -1,4 +1,4 @@
-name: Check Merge Source Branch
+name: Check version and create release tag
 
 on:
   pull_request:
