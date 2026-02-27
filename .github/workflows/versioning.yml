@@ -4,23 +4,20 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, closed]
+    types: [opened, synchronize, reopened, closed]
 
 permissions:
   contents: write
 
 jobs:
-  validate-and-tag:
+  validate-pr:
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.TAGS_PAT }}
 
       - name: Validate source branch
-        if: github.event.action != 'closed'
         run: |
           if [[ "${{ github.head_ref }}" != "develop" ]]; then
             echo "Error: Pull request source branch must be 'develop'."
@@ -28,7 +25,6 @@ jobs:
           fi
 
       - name: Check if PR version already exists
-        if: github.event.action != 'closed'
         run: |
           VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
           echo "Checking pubspec version availability: $VERSION"
@@ -41,7 +37,17 @@ jobs:
             echo "Version $VERSION is available."
           fi
 
-      - name: Bump version and push tag
+  create-release-tag:
+    if: github.event.pull_request.merged == true && github.head_ref == 'develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TAGS_PAT }}
+
+      - name: Get pubspec version and push tag
         if: github.event.pull_request.merged == true && github.head_ref == 'develop'
         run: |
           VERSION=$(grep '^version: ' pubspec.yaml | sed 's/version: //' | xargs)
